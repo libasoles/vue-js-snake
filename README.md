@@ -1,29 +1,20 @@
-# snake
+# Snake
 
-## Project setup
-```
-yarn install
-```
+First of all, you can play the prototype demo [here](https://codepen.io/libasoles/pen/bGbONWJ?editors=1010).
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+![Demo](https://github.com/libasoles/vue-js-snake/blob/master/public/screenshot.png)
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+Basically, it's a Vue.js exercise to try out componentization. 
 
-### Run your tests
-```
-yarn run test
-```
+Next step: a multiplayer game with socket.io, that's a variant of the snake. Meet Tron:
+https://www.youtube.com/watch?v=3SsRP2_fr3w&t=40s
 
-### Lints and fixes files
-```
-yarn run lint
-```
+## How to run?
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+As usual, install dependencies:
+
+`yarn install`
+
+And run:
+
+`yarn serve`
