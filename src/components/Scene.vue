@@ -23,9 +23,7 @@ export default {
   name: 'Scene',
   methods: {
     update() {
-      if(this.snake.speed > 0) {
-        this.$refs.snake.move();
-      }
+      this.$refs.snake.move();
     },
     checkCollision() {       
       const {position} = this.snake.head;
@@ -41,7 +39,7 @@ export default {
     checkFruitEaten() {
       const {position, size} = this.snake.head;
       const fruit = this.fruit;    
-      
+
       const snakeCoordinates = {
         x: Math.round(position.x / size),
         y: Math.round(position.y / size)
@@ -51,10 +49,10 @@ export default {
         x: Math.round(fruit.position.x / fruit.size),
         y: Math.round(fruit.position.y / fruit.size)
       }
-   
+
       if(snakeCoordinates.x === fruitCoordinates.x && 
          snakeCoordinates.y === fruitCoordinates.y) {
-        
+
         return true;
       }
    
@@ -63,7 +61,7 @@ export default {
   },
   watch: {   
     snake: { 
-       handler() {       
+       handler() {
          const collides = this.checkCollision();
          if(collides) {
            this.$emit('wall-collision');

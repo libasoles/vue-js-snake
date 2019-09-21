@@ -13,7 +13,10 @@
       <div class="message">{{message}}</div>
       
       <aside class="side-controls">
-        <button class="button" v-on:click="start">Start</button>
+        <button class="button" v-on:click="start" v-if="state === states.ready || state === states.gameOver">Start</button>
+        <button class="button" v-on:click="pause" v-if="state === states.running">Pause</button>
+        <button class="button" v-on:click="resume" v-if="state === states.pause">Resume</button>
+
         <keyboard v-on:arrow-pressed="setDirection"></keyboard> 
       </aside>
     </div>
@@ -27,6 +30,13 @@ import Position from './helpers/position'
 import config from "./config";
 
 const { blockSize, dimensions } = config; 
+
+const states = {
+  ready: "ready",
+  running: "running",
+  pause: "pause",
+  gameOver: "game-over"
+}
 
 const initialState = {
   message: "",
@@ -45,12 +55,14 @@ const initialState = {
   fruit: {
     position: Position.getRandom(dimensions.width / 2, dimensions.heigth / 2),
     size: blockSize,      
-  }
+  },
+  state: states.ready,
+  states
 };
 
 export default {
   name: 'app',
-  mounted: function() {    
+  mounted: function() {
     setInterval(() => {
       this.update();
     }, config.refreshRate);
@@ -63,15 +75,25 @@ export default {
         ...this.snake,
         speed: initialState.snake.speed,
         head: {
+          ...this.snake.head,
           position: this.getRandomPosition(),
           direction: new Position(),
         },
         tail: []
       }
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
+      this.state = states.ready;
     },
     update() {
-      this.$refs.scene.update();
+      if(this.state === states.running) {
+        this.$refs.scene.update();
+      }
+    },
+    pause() {
+      this.state = states.pause;
+    },
+    resume() {
+      this.state = states.running;
     },
     getRandomPosition(options) {
       return Position.getRandom(
@@ -98,6 +120,7 @@ export default {
       }
 
       this.snake.head.direction = direction;
+      this.state = states.running;
     },
     setSnakePosition({head, tail}) {
       this.snake.head.position = head;
@@ -129,7 +152,7 @@ export default {
     },
     endGame(message = "") {
       this.message = message;
-      this.snake.speed = 0;
+      this.state = states.gameOver;
     }
   },
   components: {
