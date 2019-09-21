@@ -1,5 +1,7 @@
+import config from '../config';
+
 const defaultOptions = {
-  constraint: 10
+  constraint: config.blockSize
 };
 
 export default class Position {

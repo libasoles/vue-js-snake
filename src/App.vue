@@ -22,16 +22,11 @@
 import Scene from './components/Scene.vue'
 import Keyboard from './components/Keyboard'
 import Position from './helpers/position'
+import config from "./config";
 
-const blockSize = 10;
-
-const dimensions = {
-  width: 500,
-  heigth: 250
-}; 
+const { blockSize, dimensions } = config; 
 
 const initialState = {
-  frameCount: 0,
   message: "",
   scene: {
     dimensions
@@ -55,9 +50,8 @@ export default {
   name: 'app',
   mounted: function() {    
     setInterval(() => {
-      this.frameCount += 1;
       this.move();
-    }, 100);
+    }, config.refreshRate);
   },
   data: () => initialState,
   methods: {    
