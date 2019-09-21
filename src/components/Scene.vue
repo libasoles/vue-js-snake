@@ -5,9 +5,13 @@
     }">
     <Fruit :position="fruit.position"
       :size="fruit.size"></Fruit>
-    <Snake :position="snake.head.position" 
+    <Snake ref="snake"
+      v-on="$listeners"
+      :position="snake.head.position" 
+      :direction="snake.head.direction" 
       :headSize="snake.head.size"
-      :tail="snake.tail"></Snake>
+      :tail="snake.tail"
+    ></Snake>
   </section>
 </template>
 
@@ -18,8 +22,13 @@ import Fruit from './Fruit';
 export default {
   name: 'Scene',
   methods: {
+    update() {
+      if(this.snake.speed > 0) {
+        this.$refs.snake.move();
+      }
+    },
     checkCollision() {       
-      const {position, size} = this.snake.head;
+      const {position} = this.snake.head;
 
       if(position.x < 0 || position.x >= this.dimensions.width ||
          position.y < 0 || position.y >= this.dimensions.heigth) {
@@ -54,7 +63,7 @@ export default {
   },
   watch: {   
     snake: { 
-       handler(snake) {       
+       handler() {       
          const collides = this.checkCollision();
          if(collides) {
            this.$emit('wall-collision');

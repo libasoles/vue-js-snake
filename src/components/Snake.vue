@@ -14,13 +14,37 @@
 
 <script>
 import Block from "./Block";
+import Position from "../helpers/position"
 
 export default {
   name: "Snake",
-  props: ['position', 'headSize', 'tail'],
+  methods: {
+    move() {      
+      // move head   
+      let previous = {...this.position};
+      const newPosition = Position.add(
+        this.position, 
+        this.direction
+      );
+  
+      // move tail   
+      let newTail = [];   
+      for(let chunk in this.tail) {  
+        const newPosition = Position.clone(previous);
+        previous = this.tail[chunk];
+        newTail.push(newPosition);
+      }
+   
+      this.$emit('snake-moved', {
+        head: newPosition,
+        tail: newTail
+      });
+    },  
+  },  
+  props: ['position', 'direction', 'headSize', 'tail'],
   components: {
     Block
-  }
+  },  
 }
 </script>
 

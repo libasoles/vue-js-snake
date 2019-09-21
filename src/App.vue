@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <div class="container">
-      <Scene v-bind:dimensions="scene.dimensions"
+      <Scene ref="scene"
+            v-bind:dimensions="scene.dimensions"
             v-bind:snake="snake"
             v-bind:fruit="fruit"
+            v-on:snake-moved="setSnakePosition"
             v-on:wall-collision="handleCollition"
             v-on:fruit-eaten="handleFruitEaten">      
       </scene>
@@ -11,7 +13,7 @@
       <div class="message">{{message}}</div>
       
       <aside class="side-controls">
-        <button class="button" @click="start">Start</button>
+        <button class="button" v-on:click="start">Start</button>
         <keyboard v-on:arrow-pressed="setDirection"></keyboard> 
       </aside>
     </div>
@@ -50,7 +52,7 @@ export default {
   name: 'app',
   mounted: function() {    
     setInterval(() => {
-      this.move();
+      this.update();
     }, config.refreshRate);
   },
   data: () => initialState,
@@ -67,6 +69,9 @@ export default {
         tail: []
       }
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
+    },
+    update() {
+      this.$refs.scene.update();
     },
     getRandomPosition(options) {
       return Position.getRandom(
@@ -94,31 +99,10 @@ export default {
 
       this.snake.head.direction = direction;
     },
-    move() {
-      if(this.snake.speed === 0) {
-        return false;
-      }
-
-      const { head, tail, speed } = this.snake;
-      const { size } = head;
-      let { x, y } = head.position;
-         
-      // move head   
-      let previous = {...head.position};
-      this.snake.head.position = Position.add(
-        this.snake.head.position, 
-        this.snake.head.direction
-      );
-  
-      // move tail   
-      let newTail = [];   
-      for(let chunk in tail) {  
-        const newPosition = Position.clone(previous);
-        previous = tail[chunk];
-        newTail.push(newPosition);
-      }
-      this.snake.tail = newTail;
-    },  
+    setSnakePosition({head, tail}) {
+      this.snake.head.position = head;
+      this.snake.tail = tail;
+    }, 
     handleCollition() {
       this.endGame("Oh no!");
     },
