@@ -6,8 +6,9 @@ First of all, you can play the prototype demo [here](https://codepen.io/libasole
 
 Basically, it's a Vue.js exercise to try out componentization. 
 
-Next step: a multiplayer game with socket.io, that's a variant of the snake. Meet Tron:
-https://www.youtube.com/watch?v=3SsRP2_fr3w&t=40s
+### Design decisions
+- state is all managed in the main component
+- components emits events
 
 ## How to run?
 
@@ -18,3 +19,9 @@ As usual, install dependencies:
 And run:
 
 `yarn serve`
+
+
+### Next step
+A multiplayer game with socket.io, that's a variant of the snake. Meet Tron:
+
+https://www.youtube.com/watch?v=3SsRP2_fr3w&t=40s

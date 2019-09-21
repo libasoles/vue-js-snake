@@ -6,5 +6,5 @@ const dimensions = {
 export default {
     dimensions,
     blockSize: 10,
-    refreshRate: 100, // mm
+    refreshRate: 100, // ms
 }  
