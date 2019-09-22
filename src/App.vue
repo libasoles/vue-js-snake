@@ -17,7 +17,7 @@
         <button class="button" v-on:click="pause" v-if="state === states.running">Pause</button>
         <button class="button" v-on:click="resume" v-if="state === states.pause">Resume</button>
 
-        <keyboard v-on:arrow-pressed="setDirection"></keyboard> 
+        <keyboard v-on:arrow-pressed="setSnakeDirection"></keyboard> 
       </aside>
     </div>
   </div>
@@ -29,7 +29,8 @@ import Keyboard from './components/Keyboard'
 import Position from './helpers/position'
 import config from "./config";
 
-const { blockSize, dimensions } = config; 
+const { blockSize, scene } = config; 
+const { dimensions } = scene;
 
 const states = {
   ready: "ready",
@@ -56,7 +57,7 @@ const initialState = {
     position: Position.getRandom(dimensions.width / 2, dimensions.heigth / 2),
     size: blockSize,      
   },
-  refreshRate: config.refreshRate,
+  refreshRate: config.refreshRate, // actual speed
   state: states.ready,
   states
 };
@@ -66,9 +67,10 @@ export default {
   mounted: function() {
     this.loop();
   },
-  data: () => initialState,
+  data: () => ({...initialState}),
   methods: {    
-    start() {    
+    start() {  
+      // reset game state  
       this.message = initialState.message;
       this.snake = {
         ...this.snake,
@@ -83,7 +85,14 @@ export default {
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
       this.state = states.ready;
       this.refreshRate = config.refreshRate;
-      this.loop();
+
+      this.loop(); // ensures the new scene has the correct refreshRate
+    },
+    loop() {
+      clearInterval(this.interval);
+      this.interval = setInterval(() => {
+        this.update();
+      }, this.refreshRate);
     },
     update() {
       if(this.state === states.running) {
@@ -95,14 +104,8 @@ export default {
     },
     resume() {
       this.state = states.running;
-    },
-    loop() {
-      clearInterval(this.invertal);
-      this.invertal = setInterval(() => {
-        this.update();
-      }, this.refreshRate);
-    },
-    increaseSpeed() {      
+    },  
+    increaseGameSpeed() {      
       const shouldAccelerate = this.refreshRate > config.refreshRate / 2;
       if(shouldAccelerate) {
         this.refreshRate = this.refreshRate - 3;
@@ -116,7 +119,11 @@ export default {
         options
       );
     },
-    setDirection(keyname) {
+    setSnakePosition({head, tail}) {
+      this.snake.head.position = head;
+      this.snake.tail = tail;
+    }, 
+    setSnakeDirection(keyname) {
       const { speed } = this.snake;
       const direction = new Position();
 
@@ -135,16 +142,12 @@ export default {
 
       this.snake.head.direction = direction;
       this.state = states.running;
-    },
-    setSnakePosition({head, tail}) {
-      this.snake.head.position = head;
-      this.snake.tail = tail;
-    }, 
+    },    
     handleCollition() {
-      this.endGame("Oh no!");
+      this.endGame(config.messages.gameOver);
     },
     handleFruitEaten() {
-      this.displayTemporalMessage("Yum!");  
+      this.displayTemporalMessage(config.messages.fruitEaten);  
       
       const { head } = this.snake;
       
@@ -154,11 +157,13 @@ export default {
       );
       this.snake.tail.push(tailChunk);
       
-      this.increaseSpeed();
+      this.increaseGameSpeed();
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
     },
     displayTemporalMessage(message) {
        this.message = message;
+
+       // clear up message if no other message was displayed after
        setTimeout(() => {
          if(this.message === message) {
            this.message = "";
@@ -215,5 +220,4 @@ export default {
   height: 40px;
   font-size: 20px;
 }
-
 </style>

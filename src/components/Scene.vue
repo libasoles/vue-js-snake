@@ -1,12 +1,16 @@
 <template>
-  <section class="scene" v-bind:style="{
-      width: this.dimensions.width + 'px',
-      height: this.dimensions.heigth + 'px'
+  <section class="scene" 
+    v-bind:style="{
+      width: dimensions.width + 'px',
+      height: dimensions.heigth + 'px'
     }">
+
     <Fruit :position="fruit.position"
       :size="fruit.size"></Fruit>
+
+    <!-- $listeners propagates child events -->
     <Snake ref="snake"
-      v-on="$listeners"
+      v-on="$listeners" 
       :position="snake.head.position" 
       :direction="snake.head.direction" 
       :headSize="snake.head.size"
@@ -37,21 +41,11 @@ export default {
       return false;
     },
     checkFruitEaten() {
-      const {position, size} = this.snake.head;
+      const { head } = this.snake;
       const fruit = this.fruit;    
-
-      const snakeCoordinates = {
-        x: Math.round(position.x / size),
-        y: Math.round(position.y / size)
-      }
-      
-      const fruitCoordinates = {
-        x: Math.round(fruit.position.x / fruit.size),
-        y: Math.round(fruit.position.y / fruit.size)
-      }
-
-      if(snakeCoordinates.x === fruitCoordinates.x && 
-         snakeCoordinates.y === fruitCoordinates.y) {
+    
+      if(head.position.x === fruit.position.x && 
+         head.position.y === fruit.position.y) {
 
         return true;
       }
@@ -72,7 +66,7 @@ export default {
            this.$emit('fruit-eaten');
          }
       },
-      deep: true // TODO: check for specific value
+      deep: true
     }
   },
   props: ['dimensions', 'snake', 'fruit'],
