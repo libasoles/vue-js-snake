@@ -9,6 +9,7 @@ Basically, it's a Vue.js exercise to try out componentization.
 ### Design decisions
 - state is all managed in the main component
 - components emits events
+- there's a game loop, that triggers an _update_ chain
 
 ## How to run?
 
