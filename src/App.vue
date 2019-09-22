@@ -56,6 +56,7 @@ const initialState = {
     position: Position.getRandom(dimensions.width / 2, dimensions.heigth / 2),
     size: blockSize,      
   },
+  refreshRate: config.refreshRate,
   state: states.ready,
   states
 };
@@ -63,9 +64,7 @@ const initialState = {
 export default {
   name: 'app',
   mounted: function() {
-    setInterval(() => {
-      this.update();
-    }, config.refreshRate);
+    this.loop();
   },
   data: () => initialState,
   methods: {    
@@ -83,6 +82,8 @@ export default {
       }
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
       this.state = states.ready;
+      this.refreshRate = config.refreshRate;
+      this.loop();
     },
     update() {
       if(this.state === states.running) {
@@ -94,6 +95,19 @@ export default {
     },
     resume() {
       this.state = states.running;
+    },
+    loop() {
+      clearInterval(this.invertal);
+      this.invertal = setInterval(() => {
+        this.update();
+      }, this.refreshRate);
+    },
+    increaseSpeed() {      
+      const shouldAccelerate = this.refreshRate > config.refreshRate / 2;
+      if(shouldAccelerate) {
+        this.refreshRate = this.refreshRate - 3;
+        this.loop();
+      }      
     },
     getRandomPosition(options) {
       return Position.getRandom(
@@ -140,6 +154,7 @@ export default {
       );
       this.snake.tail.push(tailChunk);
       
+      this.increaseSpeed();
       this.fruit.position = this.getRandomPosition({ except: this.snake.head.position });
     },
     displayTemporalMessage(message) {
